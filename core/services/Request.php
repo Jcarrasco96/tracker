@@ -1,0 +1,107 @@
+<?php
+
+namespace app\core\services;
+
+class Request
+{
+
+    public array $routeParams = [];
+
+    public function getMethod(): string
+    {
+        return $_SERVER['REQUEST_METHOD'];
+    }
+
+    public function getPath(): string
+    {
+        $path = $_SERVER['REQUEST_URI'] ?? '/';
+
+        $path = str_replace('/micro-framework', '', $path);
+
+        $position = strpos($path, '?');
+
+        if ($position === false) {
+            return $path;
+        }
+
+        return substr($path, 0, $position);
+    }
+
+    public function get(string $key = null, mixed $default = null)
+    {
+        if ($key === null) {
+            return $_GET;
+        }
+        return $_GET[$key] ?? $default;
+    }
+
+    public function post(string $key = null, mixed $default = null)
+    {
+        if ($key === null) {
+            return $_POST;
+        }
+        return $_POST[$key] ?? $default;
+    }
+
+    public function input(string $key = null, mixed $default = null)
+    {
+        $input = json_decode(file_get_contents('php://input'), true) ?? [];
+
+        if ($key === null) {
+            return array_merge($_POST, $input);
+        }
+
+        return $_POST[$key] ?? $input[$key] ?? $default;
+    }
+
+    public function isAjax(): bool
+    {
+        return isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+    }
+
+    public function isPost(): bool
+    {
+        return $_SERVER['REQUEST_METHOD'] === 'POST';
+    }
+
+    public function setRouteParams(mixed $params): void
+    {
+        $this->routeParams = $params;
+    }
+
+    public function param(string $key = null, mixed $default = null)
+    {
+        if ($key === null) {
+            return $this->routeParams;
+        }
+        return $this->routeParams[$key] ?? $default;
+    }
+
+    public static function getIp(): string
+    {
+        if (isset($_SERVER['HTTP_CF_CONNECTING_IP'])) {
+            $ip = $_SERVER['HTTP_CF_CONNECTING_IP'];
+        } elseif (isset($_SERVER['REMOTE_ADDR']) === true) {
+            $ip = $_SERVER['REMOTE_ADDR'];
+            if (preg_match('/^(?:127|10)\.0\.0\.[12]?\d{1,2}$/', $ip)) {
+                if (isset($_SERVER['HTTP_X_REAL_IP'])) {
+                    $ip = $_SERVER['HTTP_X_REAL_IP'];
+                } elseif (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+                    $ip = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR'])[0];
+                }
+            }
+        } else {
+            $ip = '127.0.0.1';
+        }
+        if (in_array($ip, ['::1', '0.0.0.0', 'localhost'], true)) {
+            $ip = '127.0.0.1';
+        }
+        $filter = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4);
+        if ($filter === false) {
+            $ip = '127.0.0.1';
+        }
+
+        return $ip;
+    }
+
+}

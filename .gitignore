@@ -1,0 +1,13 @@
+.idea
+.idea_modules/
+
+/database/
+/runtime/
+/vendor/
+
+/config/web.local.php
+
+/assets/css/*.min.css
+/assets/css/*.min.css.map
+/assets/js/*.min.js
+/assets/js/*.min.js.map
