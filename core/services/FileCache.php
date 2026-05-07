@@ -19,6 +19,10 @@ class FileCache
     {
         $cacheFile = $this->getCacheFile($key);
 
+        if (!@file_exists($cacheFile)) {
+            return false;
+        }
+
         if (@filemtime($cacheFile) > time()) {
             $fp = @fopen($cacheFile, 'r');
             if ($fp !== false) {
@@ -33,15 +37,16 @@ class FileCache
         return false;
     }
 
-    /**
-     * @throws Exception
-     */
     public function setValue(string $key, string $value, int $duration): bool
     {
-//        $this->gc();
         $cacheFile = $this->getCacheFile($key);
         if ($this->directoryLevel > 0) {
-            @self::createDirectory(dirname($cacheFile), $this->dirMode, true);
+            try {
+                @self::createDirectory(dirname($cacheFile), $this->dirMode);
+            } catch (Exception $e) {
+                App::$logger->throwable($e);
+                return false;
+            }
         }
         // If ownership differs the touch call will fail, so we try to
         // rebuild the file from scratch by deleting it first
@@ -63,19 +68,6 @@ class FileCache
         $error = error_get_last();
         App::$logger->warning("Unable to write cache file '$cacheFile': {$error['message']}");
         return false;
-    }
-
-    /**
-     * @throws Exception
-     */
-    public function addValue(string $key, string $value, int $duration): bool
-    {
-        $cacheFile = $this->getCacheFile($key);
-        if (@filemtime($cacheFile) > time()) {
-            return false;
-        }
-
-        return $this->setValue($key, $value, $duration);
     }
 
     protected function getCacheFile(string $normalizedKey): string

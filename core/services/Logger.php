@@ -2,6 +2,8 @@
 
 namespace app\core\services;
 
+use Throwable;
+
 readonly class Logger
 {
 
@@ -41,6 +43,18 @@ readonly class Logger
     public function error(string $message): void
     {
         $this->log('ERROR', $message);
+    }
+
+    public function throwable(Throwable $e): void
+    {
+        $message = sprintf("%s in %s:%d\nStack trace:\n%s\n",
+            $e->getMessage(),
+            $e->getFile(),
+            $e->getLine(),
+            $e->getTraceAsString()
+        );
+
+        $this->log('THROWABLE', $message);
     }
 
 }

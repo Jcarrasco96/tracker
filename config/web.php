@@ -1,8 +1,6 @@
 <?php
 
-$localConfig = require(__DIR__ . '/web.local.php');
-
-return array_merge([
+return [
     'name' => 'Tracker',
     'db' => [
         'driver' => 'mysql',
@@ -15,4 +13,4 @@ return array_merge([
             'charset' => 'utf8',
         ],
     ],
-], $localConfig);
+];

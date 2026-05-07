@@ -25,6 +25,10 @@ class Event extends BaseModel
     public ?string $label;
     public ?string $value;
 
+    public ?string $browser;
+    public ?string $os;
+    public ?string $device_type;
+
     protected static function tableName(): string
     {
         return 'event';
@@ -32,46 +36,23 @@ class Event extends BaseModel
 
     public function __construct(array $data = [])
     {
-        if (isset($data['id'])) {
-            $this->id = $data['id'];
-        } else {
-            $this->id = Uuid::uuid4()->toString();
-        }
+        $this->id = $data['id'] ?? Uuid::uuid4()->toString();
 
-        if (isset($data['website_id'])) {
-            $this->website_id = $data['website_id'];
-        }
-        if (isset($data['event_type'])) {
-            $this->event_type = $data['event_type'];
-        }
-        if (isset($data['url'])) {
-            $this->url = $data['url'];
-        }
-        if (isset($data['referrer'])) {
-            $this->referrer = $data['referrer'];
-        }
-        if (isset($data['user_agent'])) {
-            $this->user_agent = $data['user_agent'];
-        }
-        if (isset($data['language'])) {
-            $this->language = $data['language'];
-        }
-        if (isset($data['ip_hash'])) {
-            $this->ip_hash = $data['ip_hash'];
-        }
-        if (isset($data['created_at'])) {
-            $this->created_at = $data['created_at'];
-        }
-        if (isset($data['label'])) {
-            $this->label = $data['label'];
-        } else {
-            $this->label = null;
-        }
-        if (isset($data['value'])) {
-            $this->value = $data['value'];
-        } else {
-            $this->value = null;
-        }
+        $this->website_id = $data['website_id'];
+        $this->event_type = $data['event_type'];
+        $this->url = $data['url'];
+        $this->referrer = $data['referrer'];
+        $this->user_agent = $data['user_agent'];
+        $this->language = $data['language'];
+        $this->ip_hash = $data['ip_hash'];
+        $this->created_at = $data['created_at'] ?? '';
+
+        $this->label = $data['label'] ?? null;
+        $this->value = $data['value'] ?? null;
+
+        $this->browser = $data['browser'] ?? null;
+        $this->os = $data['os'] ?? null;
+        $this->device_type = $data['device_type'] ?? null;
     }
 
     /**
@@ -116,6 +97,7 @@ class Event extends BaseModel
             ->from(self::tableName())
             ->data([
                 'id' => $this->id,
+
                 'website_id' => $this->website_id,
                 'event_type' => $this->event_type,
                 'url' => $this->url,
@@ -123,8 +105,13 @@ class Event extends BaseModel
                 'user_agent' => $this->user_agent,
                 'language' => $this->language,
                 'ip_hash' => $this->ip_hash,
+
                 'label' => $this->label,
                 'value' => $this->value,
+
+                'browser' => $this->browser,
+                'os' => $this->os,
+                'device_type' => $this->device_type,
             ])
             ->execute();
     }
@@ -191,15 +178,100 @@ class Event extends BaseModel
 
     public static function timeSeries(string $website): array
     {
+        $day = date('Y-m-d');
+        $start = $day . ' 00:00:00';
+        $end = $day . ' 23:59:59';
+
         return (new SelectSafeQuery())
             ->data([
                 new RawExpression('DATE(created_at) as date'),
+                new RawExpression('HOUR(created_at) as hour'),
                 new RawExpression('COUNT(*) as visits'),
             ])
             ->from('event')
             ->where('website_id', $website)
+            ->whereAdvanced('created_at', '>=', $start)
+            ->whereAdvanced('created_at', '<=', $end)
             ->groupBy('date')
+            ->groupBy('hour')
             ->orderBy('date')
+            ->orderBy('hour')
             ->execute();
     }
+
+    public static function languages(string $website): array
+    {
+        return (new SelectSafeQuery())
+            ->data([
+                'language',
+                new RawExpression('COUNT(*) as total'),
+            ])
+            ->from('event')
+            ->where('website_id', $website)
+            ->groupBy('language')
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->execute();
+    }
+
+    public static function userAgents(string $website): array
+    {
+        return (new SelectSafeQuery())
+            ->data([
+                'user_agent',
+                new RawExpression('COUNT(*) as total'),
+            ])
+            ->from('event')
+            ->where('website_id', $website)
+            ->groupBy('user_agent')
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->execute();
+    }
+
+    public static function browsers(string $website): array
+    {
+        return (new SelectSafeQuery())
+            ->data([
+                'browser',
+                new RawExpression('COUNT(*) as total'),
+            ])
+            ->from('event')
+            ->where('website_id', $website)
+            ->groupBy('browser')
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->execute();
+    }
+
+    public static function os(string $website): array
+    {
+        return (new SelectSafeQuery())
+            ->data([
+                'os',
+                new RawExpression('COUNT(*) as total'),
+            ])
+            ->from('event')
+            ->where('website_id', $website)
+            ->groupBy('os')
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->execute();
+    }
+
+    public static function devices(string $website): array
+    {
+        return (new SelectSafeQuery())
+            ->data([
+                'device_type',
+                new RawExpression('COUNT(*) as total'),
+            ])
+            ->from('event')
+            ->where('website_id', $website)
+            ->groupBy('device_type')
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->execute();
+    }
+
 }

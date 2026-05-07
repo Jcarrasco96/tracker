@@ -22,9 +22,7 @@ use app\core\widgets\Alert;
 
 <div class="wrapper">
     <main id="content" class="content d-none">
-<!--        <div class="container">-->
-            <?= $content; ?>
-<!--        </div>-->
+        <?= $content; ?>
     </main>
 
     <?php include_once '_footer.php'; ?>

@@ -2,6 +2,7 @@
 <?php
 
 use app\core\database\Migrator;
+use app\core\helpers\ArrayHelper;
 
 include 'vendor/autoload.php';
 
@@ -19,7 +20,10 @@ if (!is_dir(MIGRATION_PATH)) {
     mkdir(MIGRATION_PATH, 0755, true);
 }
 
-$config = require_once BASE_PATH . 'config/web.php';
+$config = ArrayHelper::merge(
+        require_once BASE_PATH . 'config/web.php',
+        require_once BASE_PATH . 'config/web.local.php',
+);
 
 $migrator = new Migrator($config['db'], MIGRATION_PATH);
 

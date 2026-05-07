@@ -3,13 +3,74 @@
 namespace app\controllers;
 
 use app\core\Controller;
+use app\core\exceptions\NotFoundHttpException;
+use app\core\Permission;
 use app\core\services\Response;
 use app\core\widgets\Alert;
+use app\models\Event;
 use app\models\Website;
 use Random\RandomException;
 
 class WebsiteController extends Controller
 {
+
+    /**
+     * @throws NotFoundHttpException
+     */
+    #[Permission(['@'])]
+    public function actionDetails(string $website): string|Response
+    {
+        $this->loadScript('https://cdn.jsdelivr.net/npm/chart.js', inHead: true);
+
+        $model = Website::findById($website);
+
+        if (!$model) {
+            Alert::flash('info', 'Website not found.');
+            $this->redirect('site/index');
+        }
+
+        $summary = Event::summary($model->id);
+        $pages = Event::pages($model->id);
+        $referrers = Event::referrers($model->id);
+        $events = Event::events($model->id);
+        $timeSeries = Event::timeSeries($model->id);
+        $languages = Event::languages($model->id);
+        $userAgents = Event::userAgents($model->id);
+        $browsers = Event::browsers($model->id);
+        $os = Event::os($model->id);
+        $devices = Event::devices($model->id);
+
+        $visitsByHour = array_fill(0, 24, 0);
+
+        foreach ($timeSeries as $r) {
+            $hour = (int)$r['hour'];
+            $visitsByHour[$hour] = (int)$r['visits'];
+        }
+
+        $timeSeries = [];
+        foreach ($visitsByHour as $hour => $visits) {
+            $label = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00';
+            $timeSeries[] = [
+                'date'   => $label,
+                'visits' => $visits,
+            ];
+        }
+
+        return $this->render('details', [
+            'title' => 'Website',
+            'website' => $website,
+            'summary' => $summary,
+            'pages' => $pages,
+            'referrers' => $referrers,
+            'events' => $events,
+            'timeSeries' => $timeSeries,
+            'languages' => $languages,
+            'userAgents' => $userAgents,
+            'browsers' => $browsers,
+            'os' => $os,
+            'devices' => $devices,
+        ]);
+    }
 
     /**
      * @throws RandomException

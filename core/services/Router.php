@@ -5,6 +5,7 @@ namespace app\core\services;
 use app\core\exceptions\NotFoundHttpException;
 use Exception;
 use JetBrains\PhpStorm\ExpectedValues;
+use Ramsey\Uuid\Uuid;
 
 class Router
 {
@@ -183,6 +184,7 @@ class Router
             'alphanumeric' => ctype_alnum($value),
             'slug' => (bool)preg_match('/^[a-z0-9-]+$/', $value),
             'base64' => (bool)base64_decode($value, true),
+            'uuid' => Uuid::isValid($value),
             default => true,
         };
     }
@@ -192,6 +194,7 @@ class Router
         return match ($type) {
             'int', 'integer' => (int)$value,
             'float', 'number' => (float)$value,
+            'uuid' => (string)Uuid::fromString($value),
             default => $value,
         };
     }

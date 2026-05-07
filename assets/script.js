@@ -45,7 +45,11 @@
             ...data
         };
 
-        fetch("https://mytk.jcarrasco96.com/api/e", {
+        // const url = "https://mytk.jcarrasco96.com/api/e";
+        // const url = "http://127.0.0.1:3001/api/e";
+        const url = "http://192.168.1.200:3001/api/e";
+
+        fetch(url, {
             method: "POST",
             keepalive: true,
             headers: {

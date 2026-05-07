@@ -38,9 +38,6 @@ class ExceptionHandler
 
         App::$session->startSession();
 
-//        $msg = 'Uncaught ' . get_class($throwable) . ': ' . $throwable->getMessage() . ' in ' . $throwable->getFile() . ':' . $throwable->getLine() . PHP_EOL . 'Stack trace:' . PHP_EOL . $throwable->getTraceAsString();
-//        App::$logger->error($msg);
-
         App::$logger->error(self::format($throwable));
 
         if (self::isJsonRequest()) {

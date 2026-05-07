@@ -22,7 +22,8 @@
     "ramsey/uuid": "^4.8",
     "spipu/html2pdf": "^5.3",
     "ext-curl": "*",
-    "ext-dom": "*"
+    "ext-dom": "*",
+    "tedivm/jshrink": "^1.8"
   },
   "require-dev": {
     "fakerphp/faker": "^1.24"

@@ -4,6 +4,7 @@
 
 use app\core\helpers\Url;
 use app\models\Website;
+use app\utils\VisitorInfo;
 
 ?>
 
@@ -21,6 +22,7 @@ use app\models\Website;
     <table class="table table-bordered table-striped">
         <thead>
         <tr>
+            <th>Id</th>
             <th>Domain</th>
             <th class="d-print-none">Action</th>
         </tr>
@@ -28,9 +30,10 @@ use app\models\Website;
         <tbody>
         <?php foreach ($websites as $site): ?>
             <tr>
-                <td><?= htmlspecialchars($site->domain) ?></td>
-                <td class="d-print-none" style="width: 125px;">
-                    <a href="<?= Url::to("site/website/$site->id") ?>" class="btn btn-primary btn-sm"><i class="bi bi-graph-up"></i></a>
+                <td class="align-middle"><?= htmlspecialchars($site->id) ?></td>
+                <td class="align-middle"><?= htmlspecialchars($site->domain) ?></td>
+                <td class="align-middle d-print-none" style="width: 125px;">
+                    <a href="<?= Url::to("website/$site->id") ?>" class="btn btn-primary btn-sm"><i class="bi bi-graph-up"></i></a>
 
                     <button class="btn btn-primary btn-sm" id="btn-show_script" data-id="<?= $site->id ?>"><i class="bi bi-filetype-js"></i></button>
 

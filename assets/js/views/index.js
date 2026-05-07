@@ -23,7 +23,7 @@ $(document).on("click", "#btn-show_script", function (event) {
     $("#modal-app-title").html('Script for website');
 
     let html = '<textarea readonly aria-label="script" class="form-control" rows="2">';
-    html += '<script defer src="http://127.0.0.1:3001/script.js" data-website-id="' + $(this).data('id') + '"></script>';
+    html += '<script defer src="api/script" data-website-id="' + $(this).data('id') + '"></script>';
     html += '</textarea>';
 
     $("#modal-app-container").html(html);
