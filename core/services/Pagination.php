@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
-class Pagination
+final class Pagination
 {
 
     public int $page;
-    public int $pageSize;
-    public int $total;
 
-    public function __construct(int $page, int $pageSize, int $total)
+    public function __construct(int $page, public int $pageSize, public int $total)
     {
         $this->page = max(0, $page);
-        $this->pageSize = $pageSize;
-        $this->total = $total;
     }
 
     public function getPageCount(): int

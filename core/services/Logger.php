@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use Throwable;
 
-readonly class Logger
+final readonly class Logger
 {
 
     public function __construct(private string $logFile, private int $maxSize = 1024 * 1024)

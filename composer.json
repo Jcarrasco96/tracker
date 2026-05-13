@@ -22,11 +22,12 @@
     "ramsey/uuid": "^4.8",
     "spipu/html2pdf": "^5.3",
     "ext-curl": "*",
-    "ext-dom": "*",
-    "tedivm/jshrink": "^1.8"
+    "ext-dom": "*"
   },
   "require-dev": {
-    "fakerphp/faker": "^1.24"
+    "fakerphp/faker": "^1.24",
+    "tedivm/jshrink": "^1.8",
+    "tubalmartin/cssmin": "^4.1"
   },
   "config": {
     "allow-plugins": {

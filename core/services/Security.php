@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use Exception;
 use Random\RandomException;
 
-class Security
+final class Security
 {
 
     /**
@@ -117,7 +119,7 @@ class Security
         return mb_strlen($string, '8bit');
     }
 
-    private static function base64UrlEncode($input): string
+    private static function base64UrlEncode(string $input): string
     {
         return strtr(base64_encode($input), '+/', '-_');
     }

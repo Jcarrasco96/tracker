@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use app\core\App;
 use Exception;
 
-class FileCache
+final class FileCache
 {
 
     public string $keyPrefix = '';

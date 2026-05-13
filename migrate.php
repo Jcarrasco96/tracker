@@ -1,6 +1,8 @@
 #!/usr/bin/env php
 <?php
 
+declare(strict_types=1);
+
 use app\core\database\Migrator;
 use app\core\helpers\ArrayHelper;
 
@@ -21,8 +23,9 @@ if (!is_dir(MIGRATION_PATH)) {
 }
 
 $config = ArrayHelper::merge(
-        require_once BASE_PATH . 'config/web.php',
-        require_once BASE_PATH . 'config/web.local.php',
+    require_once BASE_PATH . 'config/web.php',
+//    require_once BASE_PATH . 'config/web.local.php',
+    require_once BASE_PATH . 'config/web.local-laptop.php',
 );
 
 $migrator = new Migrator($config['db'], MIGRATION_PATH);
@@ -43,6 +46,8 @@ switch ($command) {
         $content = <<< PHP
         <?php
         
+        declare(strict_types=1);
+
         namespace app\migrations;
         
         use app\core\database\Migration;
@@ -53,11 +58,18 @@ switch ($command) {
             public function up(): void
             {
                 // TODO insert code here
+                //\$this->db->exec("CREATE TABLE `$name` (
+                //    `id` char(36) NOT NULL
+                //) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
+                
+                //\$this->db->exec("ALTER TABLE `$name`
+                //    ADD PRIMARY KEY (`id`);");
             }
         
             public function down(): void
             {
                 // TODO insert code here
+                //\$this->db->exec("DROP TABLE `$name`;");
             }
             
         }

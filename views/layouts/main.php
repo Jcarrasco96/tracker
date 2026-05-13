@@ -4,6 +4,7 @@
 /** @var string $pageTitle */
 /** @var array $scripts */
 
+use app\core\App;
 use app\core\helpers\Html;
 use app\core\services\Renderer;
 use app\core\widgets\Alert;
@@ -14,7 +15,7 @@ use app\core\widgets\Alert;
 <html lang="en">
 <head>
     <?php include_once '_head.php'; ?>
-    <title><?= Html::encode($pageTitle) ?></title>
+    <title><?= Html::encode($pageTitle) ?> - <?= App::$config['name'] ?></title>
 </head>
 <body>
 
@@ -64,11 +65,12 @@ use app\core\widgets\Alert;
 
 <?= Renderer::renderScripts($scripts ?? []) ?>
 
-<?= Html::js("bootstrap.bundle.min.js") ?>
-<?= Html::js("fix.container.js") ?>
+<?= Html::js("bootstrap.bundle.js") ?>
 <?= Html::js("index.js") ?>
-<?= Html::js("growl-notification-bootstrap-alert/bootstrap-notify.min.js") ?>
-<?= Html::js("notify.min.js") ?>
+<?= Html::js("bootstrap-notify.js") ?>
+<?= Html::js("notify.js") ?>
+
+<?= Html::js("fix.container.js") ?>
 
 <?= Alert::run() ?>
 

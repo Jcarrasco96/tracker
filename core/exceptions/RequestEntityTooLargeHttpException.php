@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\exceptions;
 
 use Exception;
 use Throwable;
 
-class RequestEntityTooLargeHttpException extends Exception
+final class RequestEntityTooLargeHttpException extends Exception
 {
 
     public function __construct(string $message, ?Throwable $previous = null)

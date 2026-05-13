@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core;
 
 use app\core\exceptions\ForbiddenHttpException;
+use app\core\exceptions\ServerErrorHttpException;
 use app\core\exceptions\TooManyRequestsHttpException;
 use app\core\services\Renderer;
 use app\core\services\Request;
@@ -15,18 +18,15 @@ use ReflectionMethod;
 class Controller
 {
 
-    protected Request $request;
-
     private string $controllerName;
 
     protected string $layout = 'main';
 
     protected float $startTime;
 
-    public function __construct(Request $request)
+    public function __construct()
     {
         $this->startTime = microtime(true);
-        $this->request = $request;
 
         $className = get_class($this);
         $className = basename(str_replace('\\', '/', $className));
@@ -70,7 +70,7 @@ class Controller
                     continue;
                 }
 
-                $allowAction = $instance->check($this->request);
+                $allowAction = $instance->check();
             }
         }
 
@@ -92,10 +92,17 @@ class Controller
         }
     }
 
+    /**
+     * @throws ServerErrorHttpException
+     */
     protected function render(string $view, array $data = []): string
     {
         if (!isset($data['execTime'])) {
             $data['execTime'] = number_format(microtime(true) - $this->startTime, 5);
+        }
+
+        if (empty($data['pageTitle'])) {
+            $data['pageTitle'] = ucfirst($view);
         }
 
         $data['styles'] = $this->styles;
@@ -107,6 +114,9 @@ class Controller
         return $renderer->render($view, $data, $this->layout);
     }
 
+    /**
+     * @throws ServerErrorHttpException
+     */
     protected function renderPartial(string $view, array $data = []): string
     {
         if (!isset($data['execTime'])) {
@@ -127,20 +137,14 @@ class Controller
         return Response::json($data, $statusCode);
     }
 
-    #[NoReturn]
-    protected function redirect($url, array $params = []): void
-    {
-        Response::redirect($url, $params);
-    }
-
     /**
      * @throws ReflectionException
      * @throws TooManyRequestsHttpException
      * @throws ForbiddenHttpException
      */
-    public function createAction($methodName, $params = []): string|Response
+    public function createAction($methodName, $params = []): string|array|Response
     {
-        $this->request->setRouteParams($params);
+        App::$request->setRouteParams($params);
 
         App::$session->startSession();
 
@@ -177,11 +181,11 @@ class Controller
 
     public function validateCsrf(string $redirect = 'site/index'): void
     {
-        $csrfToken = $this->request->post('_csrf_token', '');
+        $csrfToken = App::$request->post('_csrf_token', '');
 
         if (empty($csrfToken) || !App::$session->checkCSRF($csrfToken)) {
             Alert::flash('danger', 'Invalid CSRF token.');
-            $this->redirect($redirect);
+            Response::redirect($redirect);
         }
     }
 

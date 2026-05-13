@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\helpers;
 
 class Url
@@ -21,7 +23,8 @@ class Url
         }
 
         $baseUrl .= '/';
-//        $baseUrl .= '/micro-framework/';
+
+//        $baseUrl = "https://mysql-releases-ladies-chances.trycloudflare.com/";
 
         $pathParts = explode('?', $path, 2);
         $cleanPath = $pathParts[0];

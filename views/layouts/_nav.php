@@ -1,7 +1,6 @@
 <?php
 
 use app\core\App;
-use app\core\helpers\Html;
 use app\core\helpers\Url;
 
 $roles = App::$session->roles();
@@ -37,7 +36,7 @@ if ($position !== false) {
 
 <nav id="w0-navbar" class="navbar navbar-expand-md navbar-dark fixed-top bg-primary d-print-none">
     <div class="container px-3">
-        <a class="navbar-brand" href="<?= Url::to('site/index') ?>">Tracker</a>
+        <a class="navbar-brand" href="<?= Url::to('site/index') ?>"><?= App::$config['name'] ?></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -46,7 +45,7 @@ if ($position !== false) {
                 <?php if (App::$session->isAuthenticated()): ?>
 
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><?= strtoupper($_SESSION['_email']) ?></a>
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false"><?= strtoupper(App::$user->name) ?></a>
                         <ul class="dropdown-menu dropdown-menu-end dropdown-menu-darks">
                             <li><a class="dropdown-item" href="<?= Url::to('account/my/index') ?>">Account settings</a></li>
                             <?php foreach ($rolesSelect as $item): ?>

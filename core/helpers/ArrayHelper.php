@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\helpers;
 
 class ArrayHelper
 {
 
-    public static function merge($a, ...$b)
+    public static function merge(array $a, array ...$b)
     {
         $args = func_get_args();
         $res = array_shift($args);

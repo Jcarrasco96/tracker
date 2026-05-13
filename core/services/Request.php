@@ -1,15 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
-class Request
+final class Request
 {
 
     public array $routeParams = [];
 
     public function getMethod(): string
     {
-        return $_SERVER['REQUEST_METHOD'];
+        $method = $_SERVER['REQUEST_METHOD'];
+
+        if ($_SERVER['REQUEST_METHOD'] == 'HEAD') {
+            $method = 'GET';
+        } elseif ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $headers = $this->requestHeaders();
+            if (isset($headers['X-HTTP-Method-Override']) && in_array($headers['X-HTTP-Method-Override'], ['PUT', 'DELETE', 'PATCH'])) {
+                $method = $headers['X-HTTP-Method-Override'];
+            }
+        }
+
+        return strtoupper($method);
     }
 
     public function getPath(): string
@@ -102,6 +115,34 @@ class Request
         }
 
         return $ip;
+    }
+
+    public function requestHeaders(): array
+    {
+        if (function_exists('getallheaders')) {
+            $headers = getallheaders();
+
+            if ($headers !== false) {
+                return $headers;
+            }
+        }
+
+        $headers = [];
+
+        foreach ($_SERVER as $name => $value) {
+            /** @var string $name */
+
+            if ((str_starts_with($name, 'HTTP_')) || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
+                $ucwords = ucwords(strtolower(str_replace('_', ' ', substr($name, 5))));
+                $str_replace = str_replace([' ', 'Http'], ['-', 'HTTP'], $ucwords);
+
+                if (is_string($str_replace)) {
+                    $headers[$str_replace] = $value;
+                }
+            }
+        }
+
+        return $headers;
     }
 
 }

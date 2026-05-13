@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\migrations;
 
 use app\core\database\Migration;

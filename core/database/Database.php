@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\database;
 
 use PDO;
 use PDOException;
 
-class Database
+final class Database
 {
 
     private static ?PDO $pdo = null;
@@ -19,15 +21,15 @@ class Database
 
             switch ($databaseConfig['driver']) {
                 case 'mysql':
-                    self::loadMySqlDriver($config['host'], $config['port'], $config['dbname'], $config['user'], $config['password'], $config['charset']);
+                    self::loadMySqlDriver($config['host'], intval($config['port']), $config['dbname'], $config['user'], $config['password'], $config['charset']);
                     break;
 
                 case 'sqlsrv':
-                    self::loadSqlSrvDriver($config['host'], $config['port'], $config['dbname'], $config['user'], $config['password']);
+                    self::loadSqlSrvDriver($config['host'], intval($config['port']), $config['dbname'], $config['user'], $config['password']);
                     break;
 
                 case 'pgsql':
-                    self::loadPgSqlDriver($config['host'], $config['port'], $config['dbname'], $config['user'], $config['password']);
+                    self::loadPgSqlDriver($config['host'], intval($config['port']), $config['dbname'], $config['user'], $config['password']);
                     break;
 
                 case 'sqlite':
@@ -38,7 +40,7 @@ class Database
                     throw new PDOException("Database connection error");
             }
 
-//            self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            self::$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         }
 
         return self::$pdo;

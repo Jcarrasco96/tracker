@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\models;
 
 use app\core\BaseModel;
@@ -11,7 +13,7 @@ use Exception;
 use Ramsey\Uuid\Uuid;
 use Random\RandomException;
 
-class User extends BaseModel
+final class User extends BaseModel
 {
 
     const STATUS_ACTIVE = 1;
@@ -35,11 +37,7 @@ class User extends BaseModel
      */
     public function __construct(array $data = [])
     {
-        if (isset($data['id'])) {
-            $this->id = $data['id'];
-        } else {
-            $this->id = Uuid::uuid4()->toString();
-        }
+        $this->id = $data['id'] ?? Uuid::uuid4()->toString();
 
         if (isset($data['name'])) {
             $this->name = $data['name'];
@@ -50,17 +48,10 @@ class User extends BaseModel
         if (isset($data['password'])) {
             $this->password = $data['password'];
         }
-        if (isset($data['auth_key'])) {
-            $this->auth_key = $data['auth_key'];
-        } else {
-            $this->auth_key = Security::generateRandomString();
-        }
 
-        if (isset($data['status'])) {
-            $this->status = $data['status'];
-        } else {
-            $this->status = self::STATUS_ACTIVE;
-        }
+        $this->auth_key = $data['auth_key'] ?? Security::generateRandomString();
+
+        $this->status = $data['status'] ?? (string)self::STATUS_ACTIVE;
     }
 
     /**

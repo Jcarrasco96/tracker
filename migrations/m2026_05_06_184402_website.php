@@ -1,14 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\migrations;
 
 use app\core\database\Migration;
+use app\core\database\Table;
 
 class m2026_05_06_184402_website extends Migration
 {
 
     public function up(): void
     {
+        $this->createTable('website', function (Table $t) {
+            $t->uuid('id')
+                ->string('domain', 100)
+                ->primary('id')
+                ->unique('uniq_website_domain', 'domain');
+        });
+
         $this->db->exec("CREATE TABLE `website` (
             `id` char(36) NOT NULL,
             `domain` varchar(100) NOT NULL

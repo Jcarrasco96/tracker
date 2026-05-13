@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core;
 
 use app\core\services\Request;
@@ -7,14 +9,14 @@ use app\core\services\Response;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class Permission
+final class Permission
 {
 
     public function __construct(public array $permissions)
     {
     }
 
-    public function check(Request $request): bool
+    public function check(): bool
     {
         $specialPermissions = [];
 
@@ -44,11 +46,13 @@ class Permission
                         return true;
                     }
 
-                    if ($request->getPath() === '/site/index') {
+                    $path = App::$request->getPath();
+
+                    if ($path === '/site/index') {
                         Response::redirect('auth/login');
                     }
 
-                    Response::redirect('auth/login', ['redirect' => urlencode($request->getPath())]);
+                    Response::redirect('auth/login', ['redirect' => urlencode($path)]);
             }
         }
 

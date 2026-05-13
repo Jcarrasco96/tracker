@@ -73,7 +73,16 @@ function iconDevice($device): string
 
 <div class="container">
 
-    <h3>Dashboard</h3>
+    <div class="d-flex justify-content-between align-items-center mb-2 d-print-none">
+        <div>
+            <h2>Dashboard</h2>
+        </div>
+        <div>
+            <button class="btn btn-primary" id="btn-add_website" data-url="<?= Url::to('website/create') ?>"><i class="bi bi-plus-lg"></i> Add website</button>
+
+            <button class="btn btn-danger" id="btn-delete_website"><i class="bi bi-trash-fill"></i></button>
+        </div>
+    </div>
 
     <div class="row g-2 mb-2">
         <div class="col-md-4">
@@ -192,7 +201,7 @@ function iconDevice($device): string
                     <?php if (!empty($languages)): ?>
                         <?php foreach ($languages as $language): ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <?= $language['language'] ?>
+                                <p class="mb-0"><?= $language['language'] ?? 'Unknown' ?></p>
                                 <span class="badge text-bg-primary rounded-pill"><?= $language['total'] ?></span>
                             </li>
                         <?php endforeach; ?>
@@ -220,7 +229,7 @@ function iconDevice($device): string
                         <?php foreach ($browsers as $browser): ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <p class="mb-0">
-                                    <i class="bi bi-<?= iconBrowser($browser['browser']) ?>"></i> <?= $browser['browser'] ?>
+                                    <i class="bi bi-<?= iconBrowser($browser['browser'] ?? '') ?>"></i> <?= $browser['browser'] ?? 'Unknown' ?>
                                 </p>
                                 <span class="badge text-bg-primary rounded-pill"><?= $browser['total'] ?></span>
                             </li>
@@ -240,7 +249,7 @@ function iconDevice($device): string
                         <?php foreach ($os as $operativeSystem): ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <p class="mb-0">
-                                    <i class="bi bi-<?= iconOS($operativeSystem['os']) ?>"></i> <?= $operativeSystem['os'] ?>
+                                    <i class="bi bi-<?= iconOS($operativeSystem['os'] ?? '') ?>"></i> <?= $operativeSystem['os'] ?? 'Unknown' ?>
                                 </p>
                                 <span class="badge text-bg-primary rounded-pill"><?= $operativeSystem['total'] ?></span>
                             </li>
@@ -260,7 +269,7 @@ function iconDevice($device): string
                         <?php foreach ($devices as $device): ?>
                             <li class="list-group-item d-flex justify-content-between align-items-center">
                                 <p class="mb-0">
-                                    <i class="bi bi-<?= iconDevice($device['device_type']) ?>"></i> <?= ucfirst($device['device_type']) ?>
+                                    <i class="bi bi-<?= iconDevice($device['device_type'] ?? '') ?>"></i> <?= ucfirst($device['device_type'] ?? 'Unknown') ?>
                                 </p>
                                 <span class="badge text-bg-primary rounded-pill"><?= $device['total'] ?></span>
                             </li>
@@ -284,6 +293,39 @@ function iconDevice($device): string
 </div>
 
 <script>
+    $(document).on("click", "#btn-delete_website", function (event) {
+        event.preventDefault();
+
+        $("#modal-confirm-title").html('Delete website?');
+        $("#modal-confirm").modal('show');
+
+        return false;
+    });
+
+    $(document).on("click", '#modal-confirm-button', function() {
+        $.ajax({
+            type: 'delete',
+            url: "<?= Url::to("website/$website") ?>",
+            data: {
+                is_ajax: true
+            },
+            success: function(result) {
+                if (result.success) {
+                    setTimeout(() => {
+                        window.location = "<?= Url::to("site/index") ?>"
+                    }, 500);
+                } else {
+                    nerror("There was an error while trying to delete the item.");
+                }
+
+                $("#modal-confirm").modal('hide');
+            },
+            error: function(xhr, status, error){
+                console.error("Error AJAX:", error);
+            }
+        });
+    });
+
     const timeSeries = <?= json_encode($timeSeries) ?>;
 
     const ctx = document.getElementById('chart');
@@ -303,35 +345,35 @@ function iconDevice($device): string
                 pointHoverRadius: 7,
             }]
         },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {position: 'top'},
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const hour = context.label;
-                            const val  = context.parsed.y;
-                            return `${hour} – ${val} visit${val !== 1 ? 's' : ''}`;
-                        }
-                    }
-                }
-            },
-            scales: {
-                x: {
-                    title: {display: true, text: 'Hour'},
-                    ticks: {
-                        maxRotation: 0,
-                        autoSkip: true,
-                        maxTicksLimit: 12
-                    }
-                },
-                y: {
-                    title: {display: true, text: 'Visits'},
-                    beginAtZero: true,
-                    precision: 0
-                }
-            }
-        }
+        // options: {
+        //     responsive: true,
+        //     plugins: {
+        //         legend: {position: 'top'},
+        //         tooltip: {
+        //             callbacks: {
+        //                 label: function(context) {
+        //                     const hour = context.label;
+        //                     const val  = context.parsed.y;
+        //                     return `${hour} – ${val} visit${val !== 1 ? 's' : ''}`;
+        //                 }
+        //             }
+        //         }
+        //     },
+        //     scales: {
+        //         x: {
+        //             title: {display: true, text: 'Hour'},
+        //             ticks: {
+        //                 maxRotation: 0,
+        //                 autoSkip: true,
+        //                 maxTicksLimit: 12
+        //             }
+        //         },
+        //         y: {
+        //             title: {display: true, text: 'Visits'},
+        //             beginAtZero: true,
+        //             precision: 0
+        //         }
+        //     }
+        // }
     });
 </script>

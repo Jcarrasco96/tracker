@@ -21,19 +21,18 @@ use app\core\services\Renderer;
 <link rel="icon" type="image/png" sizes="16x16" href="<?= Url::to('assets/img/favicon-16x16.png') ?>">
 <link rel="manifest" href="<?= Url::to('assets/img/site.webmanifest') ?>">
 
-<!--<script defer src="http://127.0.0.1:3001/script.js" data-website-id="6b1d434d-1282-4f13-bdef-41c984266876"></script>-->
-<script defer src="https://mytk.jcarrasco96.com/script.js" data-website-id="6b1d434d-1282-4f13-bdef-41c984266876"></script>
+<script defer src="http://127.0.0.1:3001/api/script" data-website-id="6b1d434d-1282-4f13-bdef-41c984266876"></script>
 
-<?= Html::icon("img/favicon.png") ?>
+<?= Html::icon("img/favicon.ico") ?>
 
 <?= Renderer::renderStyles($styles ?? []) ?>
 
-<?= Html::css("bootstrap.min.css") ?>
-<?= Html::css("bootstrap-icons/bootstrap-icons.min.css") ?>
-<?= Html::css("animate.min.css") ?>
+<?= Html::css("bootstrap.css") ?>
+<?= Html::css("bootstrap-icons/bootstrap-icons.css") ?>
+<?= Html::css("animate.css") ?>
 <?= Html::css("preloader.css") ?>
 <?= Html::css("style.css") ?>
 
 <?= Renderer::renderScripts($headScripts ?? []) ?>
 
-<?= Html::js("jquery-3.7.1.min.js") ?>
+<?= Html::js("jquery-3.7.1.js") ?>

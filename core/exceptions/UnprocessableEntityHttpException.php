@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\exceptions;
 
 use Exception;
 use Throwable;
 
-class UnprocessableEntityHttpException extends Exception
+final class UnprocessableEntityHttpException extends Exception
 {
 
     public function __construct(string $message, ?Throwable $previous = null)

@@ -1,19 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\database;
 
 use PDO;
 
-class Migrator
+final class Migrator
 {
 
     private PDO $db;
-    private string $path;
 
-    public function __construct(array $config, string $path)
+    public function __construct(array $config, private readonly string $path)
     {
         $this->db = Database::load($config);
-        $this->path = $path;
         $this->ensureMigrationsTable();
     }
 

@@ -2,9 +2,9 @@
 
 /** @var Website[] $websites */
 
+use app\core\App;
 use app\core\helpers\Url;
 use app\models\Website;
-use app\utils\VisitorInfo;
 
 ?>
 
@@ -29,7 +29,7 @@ use app\utils\VisitorInfo;
         </thead>
         <tbody>
         <?php foreach ($websites as $site): ?>
-            <tr>
+            <tr id="td_<?= $site->id ?>">
                 <td class="align-middle"><?= htmlspecialchars($site->id) ?></td>
                 <td class="align-middle"><?= htmlspecialchars($site->domain) ?></td>
                 <td class="align-middle d-print-none" style="width: 125px;">
@@ -37,7 +37,7 @@ use app\utils\VisitorInfo;
 
                     <button class="btn btn-primary btn-sm" id="btn-show_script" data-id="<?= $site->id ?>"><i class="bi bi-filetype-js"></i></button>
 
-                    <a href="<?= Url::to("website/$site->id") ?>" class="btn btn-danger btn-sm" id="btn-delete_website"><i class="bi bi-trash-fill"></i></a>
+                    <button data-url="<?= Url::to("website/$site->id") ?>" class="btn btn-danger btn-sm" id="btn-delete_website"><i class="bi bi-trash-fill"></i></button>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -48,9 +48,11 @@ use app\utils\VisitorInfo;
 
 <script>
     let itemUrlDelete;
+    let itemTdDelete;
 
     $('#modal-confirm').on('hidden.bs.modal', () => {
         itemUrlDelete = null;
+        itemTdDelete = null;
     });
 
     $(document).on("click", "#btn-delete_website", function (event) {
@@ -58,7 +60,8 @@ use app\utils\VisitorInfo;
 
         $("#modal-confirm-title").html('Delete website?');
 
-        itemUrlDelete = $(this).attr('href');
+        itemUrlDelete = $(this).data('url');
+        itemTdDelete = $(this).closest('tr');
 
         $("#modal-confirm").modal('show');
 
@@ -74,10 +77,15 @@ use app\utils\VisitorInfo;
             },
             success: function(result) {
                 if (result.success) {
-                    window.location.reload();
+                    if (itemTdDelete) {
+                        itemTdDelete.remove();
+                    }
+                    nsuccess(result.message);
                 } else {
-                    alert("There was an error while trying to delete the item.");
+                    nerror("There was an error while trying to delete the item.");
                 }
+
+                $("#modal-confirm").modal('hide');
             },
             error: function(xhr, status, error){
                 console.error("Error AJAX:", error);

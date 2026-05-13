@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\controllers;
 
 use app\core\App;
@@ -9,7 +11,7 @@ use app\core\services\Response;
 use app\models\Website;
 use Exception;
 
-class SiteController extends Controller
+final class SiteController extends Controller
 {
 
     /**
@@ -33,6 +35,13 @@ class SiteController extends Controller
         App::$session->setSelectedRole($role);
 
         return $this->asJson(['status' => 200, 'message' => $role]);
+    }
+
+    public function actionBefore(): string
+    {
+        header('x-powered-by: Tracker');
+
+        return "";
     }
 
 }

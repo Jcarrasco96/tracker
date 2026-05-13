@@ -1,24 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\controllers;
 
+use app\core\App;
 use app\core\Controller;
 use app\core\exceptions\NotFoundHttpException;
+use app\core\exceptions\ServerErrorHttpException;
 use app\core\Permission;
 use app\core\services\Response;
 use app\core\widgets\Alert;
 use app\models\Event;
 use app\models\Website;
-use Random\RandomException;
 
-class WebsiteController extends Controller
+final class WebsiteController extends Controller
 {
+
+    protected function beforeAction(string $methodName): void
+    {
+        $this->loadScript('/assets/js/bootstrap.bundle.js');
+        $this->loadScript('/assets/js/index.js');
+        $this->loadScript('/assets/js/bootstrap-notify.js');
+        $this->loadScript('/assets/js/notify.js');
+
+        parent::beforeAction($methodName);
+    }
 
     /**
      * @throws NotFoundHttpException
+     * @throws ServerErrorHttpException
      */
     #[Permission(['@'])]
-    public function actionDetails(string $website): string|Response
+    public function actionDetails(string $website): string
     {
         $this->loadScript('https://cdn.jsdelivr.net/npm/chart.js', inHead: true);
 
@@ -26,38 +40,37 @@ class WebsiteController extends Controller
 
         if (!$model) {
             Alert::flash('info', 'Website not found.');
-            $this->redirect('site/index');
+            Response::redirect('site/index');
         }
 
-        $summary = Event::summary($model->id);
-        $pages = Event::pages($model->id);
-        $referrers = Event::referrers($model->id);
-        $events = Event::events($model->id);
-        $timeSeries = Event::timeSeries($model->id);
-        $languages = Event::languages($model->id);
-        $userAgents = Event::userAgents($model->id);
-        $browsers = Event::browsers($model->id);
-        $os = Event::os($model->id);
-        $devices = Event::devices($model->id);
+        $summary = $model->summary();
+        $pages = $model->pages();
+        $referrers = $model->referrers();
+        $events = $model->events();
+        $timeSeries = $model->timeSeries();
+        $languages = $model->languages();
+        $userAgents = $model->userAgents();
+        $browsers = $model->browsers();
+        $os = $model->os();
+        $devices = $model->devices();
 
-        $visitsByHour = array_fill(0, 24, 0);
-
-        foreach ($timeSeries as $r) {
-            $hour = (int)$r['hour'];
-            $visitsByHour[$hour] = (int)$r['visits'];
-        }
-
-        $timeSeries = [];
-        foreach ($visitsByHour as $hour => $visits) {
-            $label = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00';
-            $timeSeries[] = [
-                'date'   => $label,
-                'visits' => $visits,
-            ];
-        }
+//        $visitsByHour = array_fill(0, 24, 0);
+//
+//        foreach ($timeSeries as $r) {
+//            $hour = (int)$r['hour'];
+//            $visitsByHour[$hour] = (int)$r['visits'];
+//        }
+//
+//        $timeSeries = [];
+//        foreach ($visitsByHour as $hour => $visits) {
+//            $label = str_pad((string)$hour, 2, '0', STR_PAD_LEFT) . ':00';
+//            $timeSeries[] = [
+//                'date'   => $label,
+//                'visits' => $visits,
+//            ];
+//        }
 
         return $this->render('details', [
-            'title' => 'Website',
             'website' => $website,
             'summary' => $summary,
             'pages' => $pages,
@@ -73,30 +86,27 @@ class WebsiteController extends Controller
     }
 
     /**
-     * @throws RandomException
+     * @throws ServerErrorHttpException
      */
-    public function actionCreate(): string|Response
+    public function actionCreate(): string|array
     {
-        $isAjaxPost = $this->request->isAjax() && $this->request->isPost();
+        $isAjaxPost = App::$request->isAjax() && App::$request->isPost();
 
         if ($isAjaxPost) {
             $errors = [];
 
-            $domain = $this->request->post('domain');
+            $domain = App::$request->post('domain');
 
             if (!$domain) {
                 $errors['domain'] = "Domain is required.";
             }
 
             if ($errors) {
-                return $this->asJson([
-                    'success' => false,
-                    'errors' => $errors
-                ]);
+                return ['success' => false, 'errors' => $errors];
             }
 
             if (isset($_POST['_validate'])) {
-                return $this->asJson(['success' => true]);
+                return ['success' => true];
             }
 
             $website = new Website([
@@ -106,25 +116,21 @@ class WebsiteController extends Controller
 
             Alert::flash('success', 'Website created successfully.');
 
-            return $this->asJson(['success' => true]);
+            return ['success' => true];
         }
 
         return $this->renderPartial('create');
     }
 
-    public function actionDelete(string $website): Response
+    public function actionDelete(string $website): array
     {
         $deleted = Website::delete($website);
 
         if ($deleted) {
-            Alert::flash('success', 'Website deleted successfully.');
-            return $this->asJson(['success' => true]);
-//            return $this->asJson(['status' => 200, 'message' => 'Website eliminado correctamente.']);
+            return ['success' => true, 'message' => 'Website deleted successfully.'];
         }
 
-//        Alert::flash('success', 'Website created successfully.');
-//        return $this->asJson(['status' => 400, 'message' => 'No se pudo eliminar el producto.']);
-        return $this->asJson(['success' => false]);
+        return ['success' => false];
     }
 
 }

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use app\core\helpers\Url;
 use JetBrains\PhpStorm\NoReturn;
 
-class Response
+final class Response
 {
 
     private array $headers = [];

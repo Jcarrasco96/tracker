@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\controllers;
 
 use app\core\App;
@@ -10,7 +12,7 @@ use app\models\User;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
 
-class AuthController extends Controller
+final class AuthController extends Controller
 {
 
     private const MAX_LOGIN_ATTEMPTS = 3;
@@ -28,35 +30,27 @@ class AuthController extends Controller
             if (isset($_SESSION['last_attempt_time'])) {
                 $timeSinceLastAttempt = time() - $_SESSION['last_attempt_time'];
                 if ($timeSinceLastAttempt < self::LOCKOUT_TIME) {
-                    return $this->render('login', ['errors' => ['password' => 'Demasiados intentos fallidos. Intente más tarde.'], 'old' => ['email' => '']]);
+                    return $this->render('login', ['errors' => ['password' => 'Too many failed attempts. Please try again later.'], 'old' => ['email' => '']]);
                 } else {
                     $_SESSION['login_attempts'] = 0;
                 }
             }
         }
 
-        if ($this->request->isPost()) {
-
-//            $user = new User();
-//            $user->email = "mail@jcarrasco96.com";
-//            $user->password = 'mail@jcarrasco96.com';
-//            $user->create();
-//
-//            die();
-
+        if (App::$request->isPost()) {
             $this->validateCsrf('auth/login');
 
-            $email = $this->request->post('email');
-            $password = $this->request->post('password');
+            $email = App::$request->post('email');
+            $password = App::$request->post('password');
 
             $errors = [];
 
             if (empty($email)) {
-                $errors['email'] = 'El nombre de usuario es requerido';
+                $errors['email'] = 'Email is required';
             }
 
             if (empty($password)) {
-                $errors['password'] = 'La contraseña es requerida';
+                $errors['password'] = 'Password is required';
             }
 
             if (!empty($errors)) {
@@ -65,29 +59,27 @@ class AuthController extends Controller
 
             $user = User::findByCredentials($email, $password);
 
-            if ($user) {
-                App::$session->removeCSRF();
-                App::$session->create($user->id, $user->email, $user->roles());
-                $this->logLoginAttempt($email);
-
-                $redirect = urldecode($_GET['redirect'] ?? 'site/index');
-                $redirectUrl = str_contains($redirect, '//') ? 'site/index' : $redirect;
-                self::redirect($redirectUrl);
-            } else {
+            if (!$user) {
                 App::$session->attemptFailed();
                 $this->logLoginAttempt($email, false);
 
                 $errors['password'] = 'Email or password is incorrect.';
                 return $this->render('login', ['errors' => $errors, 'old' => ['email' => $email]]);
             }
+
+            App::$session->removeCSRF();
+            App::$session->create($user->id, $user->email, $user->roles());
+            App::$user = $user;
+            $this->logLoginAttempt($email);
+
+            $redirect = urldecode($_GET['redirect'] ?? 'site/index');
+            $redirectUrl = str_contains($redirect, '//') ? 'site/index' : $redirect;
+            Response::redirect($redirectUrl);
         }
 
         App::$session->generateCSRF(true);
 
-        return $this->render('login', [
-            'errors' => [],
-            'old' => ''
-        ]);
+        return $this->render('login', ['errors' => [], 'old' => '']);
     }
 
     #[Permission(['@'])]
@@ -95,7 +87,7 @@ class AuthController extends Controller
     public function actionLogout(): void
     {
         App::$session->destroy();
-        self::redirect('auth/login');
+        Response::redirect('auth/login');
     }
 
     public function actionRegister(): Response

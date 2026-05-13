@@ -9,17 +9,17 @@ use app\core\helpers\Url;
 
 ?>
 
-<section class="container min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+<section class="bg-guest min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-lg-4 col-md-6 d-flex flex-column align-items-center justify-content-center">
+            <div class="col-xl-4 col-lg-6 d-flex flex-column align-items-center justify-content-center">
 
                 <div class="card">
 
                     <div class="card-body">
 
                         <div class="text-center">
-                            <img src="<?= Html::img('folder_64.png') ?>" alt="Logo"/>
+                            <img src="<?= Html::img('apple-touch-icon.png') ?>" alt="Logo" width="90" height="90"/>
 
                             <h1 class="display-4"><?= App::$config['name'] ?></h1>
 

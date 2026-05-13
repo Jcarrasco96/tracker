@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\utils;
 
-class VisitorInfo
+final class VisitorInfo
 {
 
     private static function getBrowser(string $ua): array

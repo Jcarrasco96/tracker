@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core;
 
 use app\core\exceptions\TooManyRequestsHttpException;
@@ -7,7 +9,7 @@ use app\core\services\Request;
 use Attribute;
 
 #[Attribute(Attribute::TARGET_METHOD)]
-class RateLimitChecker
+final class RateLimitChecker
 {
 
     public function __construct(public int $limit = 5, public int $seconds = 60)
@@ -49,7 +51,7 @@ class RateLimitChecker
         self::setHeaders($this->limit, $this->limit - $data['count'], $data['timestamp'] + $this->seconds);
     }
 
-    private function setHeaders($limit, $remaining, $reset): void
+    private function setHeaders(int $limit, int $remaining, int $reset): void
     {
         header('X-RateLimitChecker-Limit: ' . $limit);
         header('X-RateLimitChecker-Remaining: ' . $remaining);

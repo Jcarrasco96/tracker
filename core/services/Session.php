@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use app\core\App;
@@ -7,7 +9,7 @@ use app\core\exceptions\NotFoundHttpException;
 use app\models\User;
 use Exception;
 
-class Session
+final class Session
 {
 
     const SESSION_STARTED = TRUE;
@@ -68,12 +70,12 @@ class Session
         return false;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
         $_SESSION[$name] = $value;
     }
 
-    public function __get($name)
+    public function __get(string $name)
     {
         if (isset($_SESSION[$name])) {
             return $_SESSION[$name];
@@ -81,12 +83,12 @@ class Session
         return null;
     }
 
-    public function __isset($name)
+    public function __isset(string $name)
     {
         return isset($_SESSION[$name]);
     }
 
-    public function __unset($name)
+    public function __unset(string $name)
     {
         unset($_SESSION[$name]);
     }

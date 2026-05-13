@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\exceptions;
 
 use Exception;
 use Throwable;
 
-class TooManyRequestsHttpException extends Exception
+final class TooManyRequestsHttpException extends Exception
 {
 
     public function __construct(string $message, ?Throwable $previous = null)

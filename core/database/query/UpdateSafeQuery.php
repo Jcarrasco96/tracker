@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\database\query;
 
 class UpdateSafeQuery extends SafeQuery

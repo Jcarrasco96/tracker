@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\services;
 
 use app\core\App;
@@ -8,7 +10,7 @@ use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use Throwable;
 
-class ExceptionHandler
+final class ExceptionHandler
 {
 
     public static function register(): void
@@ -46,6 +48,10 @@ class ExceptionHandler
         }
 
         try {
+            while (ob_get_level() > 0) {
+                ob_end_clean();
+            }
+
             $renderer = new Renderer();
 
             if (APP_ENV == 'prod') {

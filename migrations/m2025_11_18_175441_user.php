@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\migrations;
 
 use app\core\database\Migration;
@@ -19,9 +21,6 @@ class m2025_11_18_175441_user extends Migration
             `password` char(60) NOT NULL,
             `auth_key` char(32) NOT NULL,
             `is_admin` tinyint(1) NOT NULL DEFAULT 0,
-            `is_billing_spec` tinyint(1) NOT NULL DEFAULT 0,
-            `is_case_mgr` tinyint(1) NOT NULL DEFAULT 0,
-            `is_supervisor` tinyint(1) NOT NULL DEFAULT 0,
             `status` tinyint(1) NOT NULL DEFAULT 1
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;");
 

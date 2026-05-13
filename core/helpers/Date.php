@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace app\core\helpers;
 
 use DateTime;
@@ -7,7 +9,7 @@ use DateTime;
 class Date
 {
 
-    public static function getDaysBetween2Dates(DateTime $date1, DateTime $date2, $absolute = true): bool|int
+    public static function getDaysBetween2Dates(DateTime $date1, DateTime $date2, bool $absolute = true): bool|int
     {
         $interval = $date2->diff($date1);
         // if we have to take in account the relative position (!$absolute) and the relative position is negative,
